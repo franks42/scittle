@@ -45,7 +45,49 @@
     'infinite? (sci/copy-var infinite? cljns)
     'iteration (sci/copy-var iteration cljns)
     'abs (sci/copy-var abs cljns)
-    'Cons cljs.core/Cons}
+    'regexp? (sci/copy-var regexp? cljns)
+    'iterable? (sci/copy-var iterable? cljns)
+    'cloneable? (sci/copy-var cloneable? cljns)
+    'reduceable? (sci/copy-var reduceable? cljns)
+    'js-symbol? (sci/copy-var js-symbol? cljns)
+    'demunge (sci/copy-var demunge cljns)
+    'swap-vals! (sci/copy-var swap-vals! cljns)
+    'reset-vals! (sci/copy-var reset-vals! cljns)
+    'add-tap (sci/copy-var add-tap cljns)
+    'remove-tap (sci/copy-var remove-tap cljns)
+    'tap> (sci/copy-var tap> cljns)
+    'Cons cljs.core/Cons
+    'Atom cljs.core/Atom
+    'Keyword cljs.core/Keyword
+    'Symbol cljs.core/Symbol
+    'UUID cljs.core/UUID
+    'MapEntry cljs.core/MapEntry
+    'PersistentVector cljs.core/PersistentVector
+    'PersistentQueue (let [x cljs.core/PersistentQueue]
+                       (gobject/set x "EMPTY" cljs.core/PersistentQueue.EMPTY)
+                       x)
+    'List cljs.core/List
+    'PersistentHashMap cljs.core/PersistentHashMap
+    'PersistentHashSet cljs.core/PersistentHashSet
+    'PersistentArrayMap cljs.core/PersistentArrayMap
+    'PersistentTreeMap cljs.core/PersistentTreeMap
+    'PersistentTreeSet cljs.core/PersistentTreeSet
+    'Volatile cljs.core/Volatile
+    'Repeat cljs.core/Repeat
+    'Cycle cljs.core/Cycle
+    'Iterate cljs.core/Iterate
+    'IntegerRange cljs.core/IntegerRange
+    'Range cljs.core/Range
+    'IndexedSeq cljs.core/IndexedSeq
+    'Subvec cljs.core/Subvec
+    'ChunkedSeq cljs.core/ChunkedSeq
+    'ChunkedCons cljs.core/ChunkedCons
+    'TaggedLiteral cljs.core/TaggedLiteral
+    'ExceptionInfo cljs.core/ExceptionInfo
+    'Reduced cljs.core/Reduced
+    'Throwable->map (sci/copy-var Throwable->map cljns)
+    'js-invoke (sci/copy-var js-invoke cljns)
+    'js-mod (sci/copy-var js-mod cljns)}
    'goog.object {'set gobject/set
                  'get gobject/get}
    'goog.string {'format gstring/format

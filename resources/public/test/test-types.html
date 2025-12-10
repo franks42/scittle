@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Test cljs.core Types in Scittle</title>
+  <!-- Local build (with additions): -->
+  <script src="/js/scittle.js"></script>
+  <!-- CDN version (without additions - uncomment to compare):
+  <script src="https://cdn.jsdelivr.net/npm/scittle@0.6.17/dist/scittle.js"></script>
+  -->
+</head>
+<body>
+  <h1>Test cljs.core Types in Scittle</h1>
+  <p>This tests whether various cljs.core types are exposed and work with <code>instance?</code></p>
+  <pre id="output"></pre>
+  
+  <script type="application/x-scittle">
+    (defn log [& args]
+      (let [el (js/document.getElementById "output")
+            msg (apply str (interpose " " args))]
+        (set! (.-textContent el) (str (.-textContent el) msg "\n"))
+        (js/console.log msg)))
+    
+    (log "=== Testing cljs.core Types ===")
+    (log)
+    
+    ;; Test each type
+    (def type-tests
+      [["List" 'cljs.core/List '(list 1 2 3)]
+       ["PersistentHashMap" 'cljs.core/PersistentHashMap '(hash-map :a 1 :b 2 :c 3 :d 4 :e 5 :f 6 :g 7 :h 8 :i 9)]
+       ["PersistentHashSet" 'cljs.core/PersistentHashSet '(hash-set 1 2 3 4 5 6 7 8 9)]
+       ["PersistentArrayMap" 'cljs.core/PersistentArrayMap '{:a 1 :b 2}]
+       ["PersistentTreeMap" 'cljs.core/PersistentTreeMap '(sorted-map :a 1 :b 2)]
+       ["PersistentTreeSet" 'cljs.core/PersistentTreeSet '(sorted-set 1 2 3)]
+       ["Volatile" 'cljs.core/Volatile '(volatile! 42)]
+       ["Repeat" 'cljs.core/Repeat '(repeat 5 :x)]
+       ["Cycle" 'cljs.core/Cycle '(cycle [1 2])]
+       ["Iterate" 'cljs.core/Iterate '(iterate inc 0)]
+       ["IntegerRange" 'cljs.core/IntegerRange '(range 10)]
+       ["Range" 'cljs.core/Range '(range 0.5 10 0.5)]
+       ["IndexedSeq" 'cljs.core/IndexedSeq '(seq [1 2 3])]
+       ["Subvec" 'cljs.core/Subvec '(subvec [1 2 3 4] 1 3)]
+       ["Cons" 'cljs.core/Cons '(cons 1 [2 3])]
+       ["Atom" 'cljs.core/Atom '(atom 42)]
+       ["Keyword" 'cljs.core/Keyword ':foo]
+       ["Symbol" 'cljs.core/Symbol ''foo]
+       ["UUID" 'cljs.core/UUID '(random-uuid)]
+       ["MapEntry" 'cljs.core/MapEntry '(first {:a 1})]
+       ["PersistentVector" 'cljs.core/PersistentVector '[1 2 3]]
+       ["PersistentQueue" 'cljs.core/PersistentQueue '(into cljs.core/PersistentQueue.EMPTY [1 2])]
+       ["ChunkedSeq" 'cljs.core/ChunkedSeq '(seq (vec (range 100)))]
+       ["ChunkedCons" 'cljs.core/ChunkedCons '(chunk-cons (chunk-first (seq (vec (range 100)))) nil)]
+       ["TaggedLiteral" 'cljs.core/TaggedLiteral '(tagged-literal 'foo {:bar 1})]
+       ["ExceptionInfo" 'cljs.core/ExceptionInfo '(ex-info "test" {:code 42})]
+       ["Reduced" 'cljs.core/Reduced '(reduced 42)]])
+    
+    (log "--- Types (instance? tests) ---")
+    (doseq [[name type-sym expr] type-tests]
+      (try
+        (if-let [t (resolve type-sym)]
+          (let [type-val (if (var? t) @t t)
+                test-val (eval expr)]
+            (if (instance? type-val test-val)
+              (log "  OK:" name)
+              (log "FAIL:" name "- instance? returned false")))
+          (log "MISS:" name "- not resolvable"))
+        (catch :default e
+          (log " ERR:" name "-" (.-message e)))))
+    
+    (log)
+    (log "--- Functions ---")
+    
+    ;; Test infinite? (already in Scittle)
+    (try
+      (log "  OK: infinite? -" (infinite? js/Infinity) (infinite? 42))
+      (catch :default e
+        (log " ERR: infinite? -" (.-message e))))
+    
+    ;; Test abs
+    (try
+      (log "  OK: abs -" (abs -42))
+      (catch :default e
+        (log " ERR: abs -" (.-message e))))
+    
+    (log)
+    (log "--- Predicates ---")
+    
+    (try (log "  OK: regexp? -" (regexp? #"test") (regexp? "test"))
+      (catch :default e (log " ERR: regexp? -" (.-message e))))
+    (try (log "  OK: iterable? -" (iterable? [1 2]))
+      (catch :default e (log " ERR: iterable? -" (.-message e))))
+    (try (log "  OK: cloneable? -" (cloneable? [1 2]))
+      (catch :default e (log " ERR: cloneable? -" (.-message e))))
+    (try (log "  OK: reduceable? -" (reduceable? [1 2]))
+      (catch :default e (log " ERR: reduceable? -" (.-message e))))
+    (try (log "  OK: js-symbol? -" (js-symbol? (js/Symbol "x")) (js-symbol? :x))
+      (catch :default e (log " ERR: js-symbol? -" (.-message e))))
+    (try (log "  OK: demunge -" (demunge "cljs.core$map"))
+      (catch :default e (log " ERR: demunge -" (.-message e))))
+    (try (let [a (atom 0)] (log "  OK: swap-vals! -" (swap-vals! a inc)))
+      (catch :default e (log " ERR: swap-vals! -" (.-message e))))
+    (try (let [a (atom 0)] (log "  OK: reset-vals! -" (reset-vals! a 42)))
+      (catch :default e (log " ERR: reset-vals! -" (.-message e))))
+    (try (do (add-tap identity) (remove-tap identity) (log "  OK: add-tap/remove-tap"))
+      (catch :default e (log " ERR: add-tap/remove-tap -" (.-message e))))
+    (try (log "  OK: tap> -" (tap> :test))
+      (catch :default e (log " ERR: tap> -" (.-message e))))
+    (try (log "  OK: Throwable->map -" (some? (Throwable->map (ex-info "test" {}))))
+      (catch :default e (log " ERR: Throwable->map -" (.-message e))))
+    (try (log "  OK: js-invoke -" (js-invoke #js {:foo (fn [x] (+ x 10))} "foo" 5))
+      (catch :default e (log " ERR: js-invoke -" (.-message e))))
+    (try (log "  OK: js-mod -" (js-mod 10 3))
+      (catch :default e (log " ERR: js-mod -" (.-message e))))
+    
+    (log)
+    (log "=== Done ===")
+  </script>
+</body>
+</html>
