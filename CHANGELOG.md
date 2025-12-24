@@ -5,12 +5,15 @@
 <!-- To create a new NPM release: -->
 
 <!-- - Run `bb npm-publish`: this will compile, bump patch version, create tag and and push to npm and Github -->
-<!-- - `bb replace-version 0.6.22 0.7.23` -->
+<!-- - `bb replace-version 0.7.28 0.7.30` -->
 <!-- - Create Github release with updated links from `doc/links.md` -->
 <!-- - `bb gh-pages` -->
 
+## v0.7.30 (2025-12-23)
+
 - [#114](https://github.com/babashka/scittle/issues/114): Enable source maps ([@jeroenvandijk](https://github.com/jeroenvandijk))
 - [#140](https://github.com/babashka/scittle/issues/140): Enable customizing the nrepl websocket port ([@PEZ](https://github.com/PEZ))
+- Bump shadow-cljs and SCI
 
 ## v0.7.28 (2025-09-13)
 
